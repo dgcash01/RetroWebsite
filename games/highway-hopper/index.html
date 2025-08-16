@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Highway Hopper – RetroArcade</title>
+
+  <!-- Fonts to match the rest of the site -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Page styles (your existing) -->
+  <link rel="stylesheet" href="./style.css">
+
+  <link rel="canonical" href="https://insertaquarter.com/games/highway-hopper/index.html">
+
+  <!-- Minimal header styles, isolated so they don't touch game HUD -->
+  <style>
+    :root {
+      --ink: #e6edf3;
+      --accent: #7ce7a2;
+    }
+
+    .site-header {
+      background: #121821;
+      color: var(--ink);
+      font-family: Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .site-header .brand {
+      font-weight: 800;
+      letter-spacing: .3px;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .site-header nav a {
+      position: relative;
+      color: var(--accent);
+      text-decoration: none;
+      margin-left: 14px;
+      padding-bottom: 3px;
+    }
+
+    .site-header nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width .25s ease;
+    }
+
+    .site-header nav a:hover::after {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Global site nav (new) -->
+  <header class="site-header">
+    <a class="brand" href="../../">RetroArcade</a>
+    <nav aria-label="Primary">
+      <a href="../../">Home</a>
+      <a href="../../merch.html">Merch</a>
+      <a href="../../blog/">Blog</a>
+      <a href="../../achievements.html">Achievements</a>
+      <a href="../../leaderboard.html?game=highway-hopper">Leaderboard</a>
+    </nav>
+  </header>
+
+  <!-- Your existing game UI below -->
+  <div class="wrap">
+    <header>
+      <h1>Highway Hopper</h1>
+      <div class="hud">
+        <span id="level">Level 1</span>
+        <span id="lives">Lives: 3</span>
+        <span id="score">Score: 0</span>
+        <span id="timer">Time: 30.0s</span>
+      </div>
+    </header>
+
+    <canvas id="game" width="780" height="624"></canvas>
+    <div class="hint">Layout: start grass → 5 traffic lanes → median → 5 water lanes → 5 homes.</div>
+  </div>
+
+  <script src="/js/score-submit.js?v=3"></script>
+
+  <script type="module">
+    import { PAD_COLS, drawLilyPads } from './lilypads.js';
+    import { createTrafficSystem } from './traffic.js';
+    import { createWaterSystem } from './water.js';
+
+    // ===== Grid & Layout =====
+    const COLS = 13, ROWS = 13;                  // 0 = top
+    const HOME_ROW = 0;                        // lily pads row
+    const WATER_TOP = 1, WATER_BOT = 5;         // 5 water lanes
+    const MEDIAN_ROW = 6;                        // grass
+    const TRAFFIC_TOP = 7, TRAFFIC_BOT = 11;      // 5 traffic lanes
+    const START_ROW = 12;                       // bottom grass
+
+    // ===== Gameplay Tunables =====
+    const HOP_MS = 120;
+    const RUN_TIME = 30;                // seconds per attempt
+    const HOME_POINTS = 50;             // base points per home
+    const TIME_BONUS_PER_SEC = 10;      // bonus per whole second
+    const PASSENGER_BONUS = 200;        // girl frog bonus
+
+    // ===== Canvas =====
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const tileW = Math.floor(canvas.width / COLS);
+    const tileH = Math.floor(canvas.height / ROWS);
+    const boardW = tileW * COLS, boardH = tileH * ROWS;
+    const offsetX = Math.floor((canvas.width - boardW) / 2);
+    const offsetY = Math.floor((canvas.height - boardH) / 2);
+
+    const css = getComputedStyle(document.documentElement);
+    const C = {
+      panel: css.getPropertyValue('--panel').trim() || '#0c1117',
+      grass: css.getPropertyValue('--grass').trim() || '#1c3b26',
+      road: css.getPropertyValue('--road').trim() || '#303846',
+      lane: css.getPropertyValue('--lane').trim() || '#3a4250',
+      water: css.getPropertyValue('--water').trim() || '#133a68',
+      accent: css.getPropertyValue('--accent').trim() || '#7ce7a2',
+    };
+
+    const tileToPx = (c, r) => [offsetX + c * tileW, offsetY + r * tileH];
+
+    // ===== HUD els =====
+    const timerEl = document.getElementById('timer');
+    const livesEl = document.getElementById('lives');
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+
+    // ===== Game state =====
+    let level = 1;
+    const homes = PAD_COLS.map(col => ({ col, filled: false })); // 5 homes by column
+    let homesFilled = 0;
+    let lives = 3;
+    let score = 0;
+
+    // Timer + flow flags
+    let lastTime = performance.now();
+    let timeLeft = RUN_TIME;
+    let runStarted = false;
+    let gameOver = false;
+
+    // Passenger
+    let hasPassenger = false;
+
+    // ===== Player =====
+    const player = { col: Math.floor(COLS / 2), row: START_ROW, targetCol: null, targetRow: null, animStart: 0, xOffset: 0 };
+    const canMoveTo = (c, r) => c >= 0 && c < COLS && r >= 0 && r < ROWS;
+    function requestHop(dc, dr) {
+      if (player.targetRow !== null || gameOver) return;
+      const nc = player.col + dc, nr = player.row + dr;
+      if (!canMoveTo(nc, nr)) return;
+      player.targetCol = nc; player.targetRow = nr; player.animStart = performance.now();
+      if (!runStarted) runStarted = true; // start timer on first move
+    }
+    const keyMap = { ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0] };
+    addEventListener('keydown', e => { if (keyMap[e.code]) { e.preventDefault(); const [dc, dr] = keyMap[e.code]; requestHop(dc, dr); } });
+
+    // ===== Systems =====
+    const traffic = createTrafficSystem({ tileW, tileH, offsetX, boardW, rows: { top: TRAFFIC_TOP, bot: TRAFFIC_BOT } });
+    const water = createWaterSystem({ tileW, tileH, offsetX, boardW, rows: { top: WATER_TOP, bot: WATER_BOT } });
+
+    // ===== Lane Configs (Bases) =====
+    const TRAFFIC_BASE = [
+      { row: 11, dir: 1, speed: 80, interval: 1800, jitter: 500, maxEntities: 3, lengths: [1, 2] },
+      { row: 10, dir: -1, speed: 110, interval: 1900, jitter: 600, maxEntities: 3, lengths: [1] },
+      { row: 9, dir: 1, speed: 130, interval: 1700, jitter: 450, maxEntities: 3, lengths: [1, 2] },
+      { row: 8, dir: -1, speed: 150, interval: 2000, jitter: 650, maxEntities: 3, lengths: [1] },
+      { row: 7, dir: 1, speed: 170, interval: 1900, jitter: 600, maxEntities: 3, lengths: [1, 2] }
+    ];
+
+    // include croc lane + minGapTiles defaults
+    const WATER_BASE = [
+      { row: 5, type: 'log', dir: 1, speed: 70, interval: 1700, jitter: 400, maxEntities: 3, lenTiles: [2, 3], minGapTiles: 1.0 },
+      { row: 4, type: 'turtle', dir: -1, speed: 80, interval: 1800, jitter: 450, maxEntities: 3, lenTiles: [2], submerge: { period: 6, down: 2, warn: 2 }, minGapTiles: 1.0 },
+      { row: 3, type: 'croc', dir: 1, speed: 88, interval: 1900, jitter: 400, maxEntities: 2, lenTiles: [3], submerge: { period: 7, down: 2, warn: 2 }, minGapTiles: 2.0 },
+      { row: 2, type: 'turtle', dir: -1, speed: 95, interval: 1800, jitter: 450, maxEntities: 3, lenTiles: [2], submerge: { period: 5, down: 2, warn: 2 }, minGapTiles: 1.2 },
+      { row: 1, type: 'log', dir: 1, speed: 75, interval: 1700, jitter: 400, maxEntities: 3, lenTiles: [2, 3], minGapTiles: 1.0 }
+    ];
+
+    function scaleLanes(base, level) {
+      const speedMul = 1 + (level - 1) * 0.12;
+      const intMul = 1 / (1 + (level - 1) * 0.08);
+      return base.map(l => ({ ...l, speed: Math.round(l.speed * speedMul), interval: Math.round(l.interval * intMul) }));
+    }
+
+    function applyLevel() {
+      traffic.configure({ lanes: scaleLanes(TRAFFIC_BASE, level) });
+
+      const scaled = scaleLanes(WATER_BASE, level);
+      const periodMul = Math.max(1.0, 1.60 - 0.12 * (level - 1));
+      const intervalMul = level === 1 ? 1.20 : (level === 2 ? 1.10 : 1.00);
+
+      const waterLanes = scaled.map(l => {
+        if (l.type !== 'turtle') return l;
+        const base = l.submerge || { period: 6, down: 2, warn: 2 };
+        const period = Math.max(base.down + 2.5, Math.round(base.period * periodMul));
+        const upTime = period - base.down;
+        const warn = Math.min(base.warn ?? 2, Math.max(0.8, upTime - 0.5));
+        const interval = Math.round(l.interval * intervalMul);
+        return { ...l, interval, submerge: { period, down: base.down, warn } };
+      });
+
+      water.configure({ lanes: waterLanes });
+      if (levelEl) levelEl.textContent = `Level ${level}`;
+    }
+
+    function updateHUD() {
+      if (livesEl) livesEl.textContent = `Lives: ${lives}`;
+      if (scoreEl) scoreEl.textContent = `Score: ${score}`;
+      if (levelEl) levelEl.textContent = `Level ${level}`;
+      if (timerEl) timerEl.textContent = `Time: ${Math.max(0, timeLeft).toFixed(1)}s`;
+    }
+
+    function roundRect(ctx, x, y, w, h, r = 8) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    }
+
+    function drawBoard() {
+      ctx.fillStyle = C.panel; roundRect(ctx, offsetX - 8, offsetY - 8, boardW + 16, boardH + 16, 12); ctx.fill();
+
+      for (let r = 0; r < ROWS; r++) {
+        const [x, y] = tileToPx(0, r), w = boardW, h = tileH;
+
+        if (r === HOME_ROW) {
+          ctx.fillStyle = C.water; ctx.fillRect(x, y, w, h);
+          const occupiedCols = new Set(homes.filter(h => h.filled).map(h => h.col));
+          drawLilyPads(ctx, tileToPx, tileW, tileH, r, C.water, occupiedCols);
+          continue;
+        }
+
+        if (r >= WATER_TOP && r <= WATER_BOT) {
+          ctx.fillStyle = C.water; ctx.fillRect(x, y, w, h);
+          ctx.save(); ctx.globalAlpha = .15; ctx.fillStyle = '#cfd6e4';
+          for (let c = 0; c < COLS; c += 2) { const [cx, cy] = tileToPx(c, r); ctx.fillRect(cx + tileW * .15, cy + h * .5 - 1, tileW * .7, 2); }
+          ctx.restore();
+          continue;
+        }
+
+        if (r === MEDIAN_ROW) { ctx.fillStyle = C.grass; ctx.fillRect(x, y, w, h); continue; }
+
+        if (r >= TRAFFIC_TOP && r <= TRAFFIC_BOT) {
+          ctx.fillStyle = C.road; ctx.fillRect(x, y, w, h);
+          ctx.fillStyle = C.lane; ctx.fillRect(x, y, w, 2); ctx.fillRect(x, y + h - 2, w, 2);
+          ctx.save(); ctx.globalAlpha = .5; ctx.fillStyle = '#cfd6e4';
+          for (let c = 0; c < COLS; c += 2) { const [cx, cy] = tileToPx(c, r); ctx.fillRect(cx + tileW * .25, cy + h / 2 - 2, tileW * .5, 4); }
+          ctx.restore();
+          continue;
+        }
+
+        if (r === START_ROW) { ctx.fillStyle = C.grass; ctx.fillRect(x, y, w, h); continue; }
+
+        ctx.fillStyle = '#18202b'; ctx.fillRect(x, y, w, h);
+      }
+
+      if (gameOver) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        roundRect(ctx, offsetX - 8, offsetY - 8, boardW + 16, boardH + 16, 12); ctx.fill();
+        ctx.fillStyle = '#e6edf3';
+        ctx.font = 'bold 36px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', offsetX + boardW / 2, offsetY + boardH / 2 - 12);
+        ctx.font = '16px system-ui';
+        ctx.fillText('Press R to restart', offsetX + boardW / 2, offsetY + boardH / 2 + 20);
+        ctx.restore();
+      }
+    }
+
+    function drawPlayer(now) {
+      const [sx, sy] = tileToPx(player.col, player.row);
+      let px = sx + player.xOffset, py = sy;
+
+      if (player.targetRow !== null) {
+        const t = Math.min(1, (now - player.animStart) / HOP_MS);
+        const [tx, ty] = tileToPx(player.targetCol, player.targetRow);
+        px = (sx + player.xOffset) + (tx - sx) * t;
+        py = sy + (ty - sy) * t;
+        if (t >= 1) { player.col = player.targetCol; player.row = player.targetRow; player.targetCol = player.targetRow = null; }
+      }
+
+      // frog
+      ctx.save(); ctx.translate(px, py);
+      const pad = Math.floor(tileW * .15), w = tileW - pad * 2, h = tileH - pad * 2;
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(tileW / 2, tileH - pad * 1.1, w * .45, h * .18, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = C.accent; roundRect(ctx, pad, pad + 2, w, h - 6, 10); ctx.fill();
+      ctx.fillStyle = '#0a0e14';
+      ctx.beginPath(); ctx.arc(tileW * .35, pad + 8, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(tileW * .65, pad + 8, 4, 0, Math.PI * 2); ctx.fill();
+
+      if (hasPassenger) {
+        ctx.fillStyle = '#ff77aa';
+        const pr = Math.min(tileW, tileH) * 0.18;
+        ctx.beginPath(); ctx.arc(tileW * 0.5, tileH * 0.38, pr, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#0a0e14';
+        ctx.beginPath(); ctx.arc(tileW * 0.5 - pr * 0.35, tileH * 0.30, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(tileW * 0.5 + pr * 0.35, tileH * 0.30, 2, 0, Math.PI * 2); ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function spawnNewFrog() {
+      player.col = Math.floor(COLS / 2);
+      player.row = START_ROW;
+      player.targetCol = player.targetRow = null;
+      player.animStart = 0;
+      player.xOffset = 0;
+      timeLeft = RUN_TIME;
+      runStarted = false;
+    }
+    let scoreSubmitted = false;
+
+    function loseLife() {
+      lives = Math.max(0, lives - 1);
+      hasPassenger = false;
+      if (lives <= 0) {
+        if (!scoreSubmitted) {
+          scoreSubmitted = true;
+          window.submitScore("highway-hopper", score);
+        }
+        gameOver = true;
+        updateHUD();
+        return;
+      }
+
+      player.col = Math.floor(COLS / 2);
+      player.row = START_ROW;
+      player.targetCol = player.targetRow = null;
+      player.animStart = 0;
+      player.xOffset = 0;
+      timeLeft = RUN_TIME;
+      runStarted = false;
+      updateHUD();
+    }
+
+    function update(dt) {
+      if (gameOver) return;
+
+      traffic.update(dt);
+      water.update(dt);
+
+      if (player.row === HOME_ROW && player.targetRow === null) {
+        const idx = PAD_COLS.indexOf(player.col);
+        if (idx === -1) { loseLife(); return; }
+        if (homes[idx].filled) { loseLife(); return; }
+
+        const timeBonus = Math.max(0, Math.floor(timeLeft)) * TIME_BONUS_PER_SEC;
+        const passengerBonus = hasPassenger ? PASSENGER_BONUS : 0;
+        score += HOME_POINTS + timeBonus + passengerBonus;
+        hasPassenger = false;
+
+        homes[idx].filled = true;
+        homesFilled++;
+        spawnNewFrog();
+        updateHUD();
+
+        if (homesFilled === PAD_COLS.length) {
+          // Optional: record the score at the end of the stage
+          if (!scoreSubmitted) window.submitScore("highway-hopper", score);
+
+          level++;
+          homes.forEach(h => h.filled = false);
+          homesFilled = 0;
+          applyLevel();
+          updateHUD();
+        }
+        return;
+      }
+
+      if (runStarted) {
+        timeLeft -= dt;
+        if (timeLeft <= 0) { loseLife(); return; }
+      }
+
+      if (player.row >= TRAFFIC_TOP && player.row <= TRAFFIC_BOT) {
+        if (traffic.overlaps(player.row, player.col)) { loseLife(); return; }
+      }
+
+      if (player.row >= WATER_TOP && player.row <= WATER_BOT) {
+        if (water.hazardAt(player.row, player.col)) { loseLife(); return; }
+
+        const carry = water.carrySpeed(player.row, player.col);
+        if (carry == null) { loseLife(); return; }
+
+        if (!hasPassenger && water.tryPickup(player.row, player.col)) { hasPassenger = true; }
+
+        player.xOffset += carry * dt;
+        while (player.xOffset > tileW / 2) { player.col++; player.xOffset -= tileW; }
+        while (player.xOffset < -tileW / 2) { player.col--; player.xOffset += tileW; }
+        if (player.col < 0 || player.col >= COLS) { loseLife(); return; }
+
+      } else {
+        if (Math.abs(player.xOffset) > 1) {
+          player.xOffset *= 0.6;
+          if (Math.abs(player.xOffset) < 1) player.xOffset = 0;
+        }
+      }
+    }
+
+    function loop(now = performance.now()) {
+      const dt = Math.max(0, Math.min(0.033, (now - lastTime) / 1000));
+      lastTime = now;
+
+      update(dt);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBoard();
+      traffic.draw(ctx);
+      water.draw(ctx);
+      drawPlayer(now);
+
+      updateHUD();
+      requestAnimationFrame(loop);
+    }
+
+    addEventListener('keydown', (e) => {
+      if (gameOver && e.code === 'KeyR') {
+        level = 1; score = 0; lives = 3; homesFilled = 0; homes.forEach(h => h.filled = false);
+        gameOver = false;
+        applyLevel();
+        spawnNewFrog();
+        updateHUD();
+      }
+    });
+
+    applyLevel();
+    updateHUD();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+
+</html>

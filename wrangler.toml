@@ -1,0 +1,16 @@
+name = "iaq-api"
+main = "api/worker.js"        # we'll add this worker next step
+compatibility_date = "2025-01-01"
+
+[vars]
+CORS_ORIGIN = "*"
+# CORS_ORIGIN = "https://insertaquarter.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iaq"
+database_id = "926ed94b-f3d2-4bc1-a5a8-88ecb1e6c0d1"
+
+[[routes]]
+pattern = "insertaquarter.com/api/*"
+zone_name = "insertaquarter.com"
