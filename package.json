@@ -1,0 +1,31 @@
+{
+  "scripts": {
+    "dev:static": "http-server . -p 8787 -c-1",
+    "dev:cf": "wrangler pages dev . --port=8787",
+    "test:ui": "playwright test",
+    "test:ui:headed": "playwright test --headed",
+    "test:ui:update": "playwright test --update-snapshots",
+    "test:lighthouse": "CHROME_PATH=/home/jules/.cache/ms-playwright/chromium-1181/chrome-linux/chrome node scripts/run-lighthouse.mjs",
+    "lint": "eslint games js tests --ext .js,.mjs,.cjs,.ts",
+    "format": "prettier --write .",
+    "qa": "npm run test:ui && npm run test:lighthouse && npm run lint"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-n": "^16.4.0",
+    "eslint-plugin-playwright": "^1.6.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^3.3.0",
+    "lighthouse": "^12.0.0",
+    "chrome-launcher": "^1.1.0",
+    "linkinator": "^6.0.0",
+    "http-server": "^14.1.1",
+    "wrangler": "^3.67.0",
+    "typescript": "^5.4.5"
+  }
+}

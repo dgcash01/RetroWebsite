@@ -1,7 +1,9 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0; padding: 0;
-  background: #0a0e14; color: #e6edf3;
+  margin: 0;
+  padding: 0;
+  background: #0a0e14;
+  color: #e6edf3;
 }
 header {
   background: #121821;
@@ -9,22 +11,29 @@ header {
   display: flex;
   justify-content: space-between;
 }
-header h1 { margin: 0; }
+header h1 {
+  margin: 0;
+}
 nav a {
-  color: #7ce7a2; margin-left: 1rem;
+  color: #7ce7a2;
+  margin-left: 1rem;
   text-decoration: none;
 }
 .game-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem; padding: 1rem;
+  gap: 1rem;
+  padding: 1rem;
 }
 .game-card {
   background: #1a2230;
-  padding: 1rem; border-radius: 8px;
+  padding: 1rem;
+  border-radius: 8px;
   text-align: center;
 }
-.game-card h3 { margin-top: 0; }
+.game-card h3 {
+  margin-top: 0;
+}
 .ad-slot {
   background: #0f1521;
   text-align: center;
@@ -34,5 +43,6 @@ nav a {
 }
 footer {
   background: #121821;
-  padding: 1rem; text-align: center;
+  padding: 1rem;
+  text-align: center;
 }
