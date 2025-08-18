@@ -1,4 +1,9 @@
-.wrangler/
-node_modules/
 .DS_Store
 Thumbs.db
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+.wrangler/
+*.log
