@@ -1,14 +1,59 @@
 /*========================  /games/highway-hopper/style.css  ========================*/
-:root{
-  --ink:#e6edf3; --muted:#9ab; --panel:#0c1117;
-  --road:#303846; --lane:#3a4250; --grass:#1c3b26; --water:#133a68; --accent:#7ce7a2;
-  --car1:#ff6b6b; --car2:#ffd166; --car3:#5ec2ff
+:root {
+  --ink: #e6edf3;
+  --muted: #9ab;
+  --panel: #0c1117;
+  --road: #303846;
+  --lane: #3a4250;
+  --grass: #1c3b26;
+  --water: #133a68;
+  --accent: #7ce7a2;
+  --car1: #ff6b6b;
+  --car2: #ffd166;
+  --car3: #5ec2ff;
 }
-*{box-sizing:border-box}
-body{margin:0;background:#0a0e14;color:var(--ink);font:16px/1.4 system-ui,Segoe UI,Inter,Arial}
-.wrap{max-width:960px;margin:24px auto;padding:16px}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-h1{margin:0;font-weight:800;font-size:22px}
-.hud{display:flex;gap:12px;font-weight:600;color:var(--muted)}
-canvas{display:block;background:#000;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
-.hint{margin-top:10px;color:var(--muted)}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #0a0e14;
+  color: var(--ink);
+  font:
+    16px/1.4 system-ui,
+    Segoe UI,
+    Inter,
+    Arial;
+}
+.wrap {
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 16px;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+h1 {
+  margin: 0;
+  font-weight: 800;
+  font-size: 22px;
+}
+.hud {
+  display: flex;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+canvas {
+  display: block;
+  background: #000;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.hint {
+  margin-top: 10px;
+  color: var(--muted);
+}

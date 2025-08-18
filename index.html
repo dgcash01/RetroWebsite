@@ -1,101 +1,259 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RetroArcade — Play Free Retro-Style Games</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="canonical" href="https://insertaquarter.com/">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-  :root{--ink:#e6edf3;--muted:#9ab;--panel:#121821;--card:#1a2230;--accent:#7ce7a2}
-  *{box-sizing:border-box}
-  body{margin:0;background:#0a0e14;color:var(--ink);font:16px/1.5 Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial}
-  header,footer{background:#121821}
-  header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
-  header .brand{font-weight:800;letter-spacing:.3px;text-decoration:none;color:var(--ink)}
-  nav a{position:relative;color:var(--accent);text-decoration:none;margin-left:14px;padding-bottom:3px}
-  nav a::after{content:"";position:absolute;left:0;bottom:0;width:0%;height:2px;background-color:var(--accent);transition:width .3s ease}
-  nav a:hover::after{width:100%}
-  main{max-width:1100px;margin:auto;padding:18px}
-  h1{margin:10px 0 12px 0}
-  .ad{height:90px;border-radius:12px;background:#0f1521;border:1px dashed #25344a;display:flex;align-items:center;justify-content:center;color:var(--muted);margin:16px 0}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  .card{background:var(--card);border:1px solid #1f2b3d;border-radius:14px;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
-  .card h3{margin:0 0 6px 0}
-  .card p{margin:0 0 10px 0;color:var(--muted)}
-  .btn{appearance:none;border:0;border-radius:12px;padding:9px 12px;background:#1a2230;color:var(--ink);font-weight:600;cursor:pointer;display:inline-block;text-decoration:none}
-  .btn.primary{background:linear-gradient(135deg,#10b981,#22d3ee);color:#00130b}
-  .btn:hover{background:linear-gradient(135deg,#22d3ee,#10b981);color:#fff;transition:background .3s ease,color .3s ease}
-  footer{padding:20px;text-align:center;color:var(--muted)}
-  @media (max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:640px){.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-  <header>
-    <a class="brand" href="/">RetroArcade</a>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/merch.html">Merch</a>
-      <a href="/blog/">Blog</a>
-      <a href="/achievements.html">Achievements</a>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RetroArcade — Play Free Retro-Style Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="canonical" href="https://insertaquarter.com/" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #e6edf3;
+        --muted: #9ab;
+        --panel: #121821;
+        --card: #1a2230;
+        --accent: #7ce7a2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #0a0e14;
+        color: var(--ink);
+        font:
+          16px/1.5 Inter,
+          system-ui,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial;
+      }
+      header,
+      footer {
+        background: #121821;
+      }
+      header {
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header .brand {
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      nav a {
+        position: relative;
+        color: var(--accent);
+        text-decoration: none;
+        margin-left: 14px;
+        padding-bottom: 3px;
+      }
+      nav a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0%;
+        height: 2px;
+        background-color: var(--accent);
+        transition: width 0.3s ease;
+      }
+      nav a:hover::after {
+        width: 100%;
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 18px;
+      }
+      h1 {
+        margin: 10px 0 12px 0;
+      }
+      .ad {
+        height: 90px;
+        border-radius: 12px;
+        background: #0f1521;
+        border: 1px dashed #25344a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        margin: 16px 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid #1f2b3d;
+        border-radius: 14px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .card h3 {
+        margin: 0 0 6px 0;
+      }
+      .card p {
+        margin: 0 0 10px 0;
+        color: var(--muted);
+      }
+      .btn {
+        appearance: none;
+        border: 0;
+        border-radius: 12px;
+        padding: 9px 12px;
+        background: #1a2230;
+        color: var(--ink);
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-block;
+        text-decoration: none;
+      }
+      .btn.primary {
+        background: linear-gradient(135deg, #10b981, #22d3ee);
+        color: #00130b;
+      }
+      .btn:hover {
+        background: linear-gradient(135deg, #22d3ee, #10b981);
+        color: #fff;
+        transition:
+          background 0.3s ease,
+          color 0.3s ease;
+      }
+      footer {
+        padding: 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">RetroArcade</a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/merch.html">Merch</a>
+        <a href="/blog/">Blog</a>
+        <a href="/achievements.html">Achievements</a>
+      </nav>
+    </header>
 
-  <main>
-    <h1>Play Free Retro-Style Games</h1>
+    <main>
+      <h1>Play Free Retro-Style Games</h1>
 
-    <div class="ad">[Ad Banner]</div>
+      <div class="ad">[Ad Banner]</div>
 
-    <section class="grid" aria-label="Game list">
-      <article class="card">
-        <div>
-          <h3>Breakout Blast</h3>
-          <p>Smash bricks, chain combos, clear levels, chase high scores.</p>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <a class="btn primary" href="/games/breakout/breakout.html">Play Now</a>
-          <a class="btn" href="/leaderboard.html?game=breakout">Leaderboard</a>
-        </div>
-      </article>
+      <section class="grid" aria-label="Game list">
+        <article class="card">
+          <div>
+            <h3>Breakout Blast</h3>
+            <p>Smash bricks, chain combos, clear levels, chase high scores.</p>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a class="btn primary" href="/games/breakout/breakout.html"
+              >Play Now</a
+            >
+            <a class="btn" href="/leaderboard.html?game=breakout"
+              >Leaderboard</a
+            >
+          </div>
+        </article>
 
-      <article class="card">
-        <div>
-          <h3>Cosmic Invaders</h3>
-          <p>Blast alien waves, protect your shields, hunt the saucer.</p>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <a class="btn primary" href="games/space-shooter/space-shooter.html">Play Now</a>
-          <a class="btn" href="/leaderboard.html?game=invaders">Leaderboard</a>
-        </div>
-      </article>
+        <article class="card">
+          <div>
+            <h3>Cosmic Invaders</h3>
+            <p>Blast alien waves, protect your shields, hunt the saucer.</p>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a class="btn primary" href="games/space-shooter/space-shooter.html"
+              >Play Now</a
+            >
+            <a class="btn" href="/leaderboard.html?game=invaders"
+              >Leaderboard</a
+            >
+          </div>
+        </article>
 
-      <article class="card">
-        <div>
-          <h3>Highway Hopper</h3>
-          <p>Dodge cars, time your jumps, get across in one piece.</p>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <a class="btn primary" href="/games/highway-hopper/">Play Now</a>
-          <a class="btn" href="/leaderboard.html?game=highway-hopper">Leaderboard</a>
-        </div>
-      </article>
-    </section>
+        <article class="card">
+          <div>
+            <h3>Highway Hopper</h3>
+            <p>Dodge cars, time your jumps, get across in one piece.</p>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <a class="btn primary" href="/games/highway-hopper/">Play Now</a>
+            <a class="btn" href="/leaderboard.html?game=highway-hopper"
+              >Leaderboard</a
+            >
+          </div>
+        </article>
+      </section>
 
-    <div class="ad">[In-content Ad]</div>
-  </main>
+      <div class="ad">[In-content Ad]</div>
+    </main>
 
-  <footer>
-    © <span id="year"></span> RetroArcade
-    <div style="margin-top:10px;border:1px dashed #25344a;border-radius:8px;height:60px;display:flex;align-items:center;justify-content:center;">
-      [Footer Ad]
-    </div>
-  </footer>
+    <footer>
+      © <span id="year"></span> RetroArcade
+      <div
+        style="
+          margin-top: 10px;
+          border: 1px dashed #25344a;
+          border-radius: 8px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        [Footer Ad]
+      </div>
+    </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-</body>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
 </html>

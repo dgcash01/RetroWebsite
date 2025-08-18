@@ -1,78 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Achievements – RetroArcade</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://insertaquarter.com/achievements.html">
-<style>
-  body{margin:0;background:#0a0e14;color:#e6edf3;font:16px/1.5 Inter,system-ui}
-  header,footer{background:#121821} header{padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-  .section{max-width:1000px;margin:18px auto;padding:0 18px}
-  .ach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-  .ach{background:#10192a;border:1px solid #1f2b3d;border-radius:12px;padding:12px}
-  .ach.locked{opacity:.55;filter:saturate(.6)}
-  .ach h4{margin:0 0 4px 0}
-  .pill{display:inline-block;font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid #263349;color:#9ab}
-</style>
-</head>
-<body>
-<header>
-  <a href="/" style="text-decoration:none;color:#e6edf3;font-weight:800">RetroArcade</a>
-  <nav style="display:flex;gap:12px">
-    <a href="/" style="color:#7ce7a2;text-decoration:none">All Games</a>
-    <a href="/merch" style="color:#7ce7a2;text-decoration:none">Merch</a>
-    <a href="/achievements" style="color:#7ce7a2;text-decoration:none">Achievements</a>
-  </nav>
-</header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Achievements – RetroArcade</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="canonical" href="https://insertaquarter.com/achievements.html" />
+    <style>
+      body {
+        margin: 0;
+        background: #0a0e14;
+        color: #e6edf3;
+        font:
+          16px/1.5 Inter,
+          system-ui;
+      }
+      header,
+      footer {
+        background: #121821;
+      }
+      header {
+        padding: 14px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .section {
+        max-width: 1000px;
+        margin: 18px auto;
+        padding: 0 18px;
+      }
+      .ach-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+      }
+      .ach {
+        background: #10192a;
+        border: 1px solid #1f2b3d;
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .ach.locked {
+        opacity: 0.55;
+        filter: saturate(0.6);
+      }
+      .ach h4 {
+        margin: 0 0 4px 0;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid #263349;
+        color: #9ab;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a
+        href="/"
+        style="text-decoration: none; color: #e6edf3; font-weight: 800"
+        >RetroArcade</a
+      >
+      <nav style="display: flex; gap: 12px">
+        <a href="/" style="color: #7ce7a2; text-decoration: none">All Games</a>
+        <a href="/merch" style="color: #7ce7a2; text-decoration: none">Merch</a>
+        <a href="/achievements" style="color: #7ce7a2; text-decoration: none"
+          >Achievements</a
+        >
+      </nav>
+    </header>
 
-<main class="section">
-  <h1>Achievements</h1>
+    <main class="section">
+      <h1>Achievements</h1>
 
-  <h2>Star Invaders</h2>
-  <div id="achInv" class="ach-grid"></div>
+      <h2>Star Invaders</h2>
+      <div id="achInv" class="ach-grid"></div>
 
-  <h2>Breakout Blast</h2>
-  <div id="achBrk" class="ach-grid"></div>
-</main>
+      <h2>Breakout Blast</h2>
+      <div id="achBrk" class="ach-grid"></div>
+    </main>
 
-<footer style="padding:20px;text-align:center;color:#9ab">© <span id="year"></span> RetroArcade</footer>
+    <footer style="padding: 20px; text-align: center; color: #9ab">
+      © <span id="year"></span> RetroArcade
+    </footer>
 
-<script>
-const INV_ACH = [
-  { id:'first_blood', name:'First Blood', desc:'Destroy your first alien' },
-  { id:'eagle_eye', name:'Eagle Eye', desc:'Reach 50% accuracy in a run' },
-  { id:'iron_dome', name:'Iron Dome', desc:'Finish a wave with 80% barrier intact' },
-  { id:'saucer_hunter', name:'Saucer Hunter', desc:'Destroy 3 motherships in one run' },
-  { id:'wave_10', name:'On a Roll', desc:'Reach Wave 10' },
-];
-const BRK_ACH = [
-  { id:'starter', name:'Warm‑Up', desc:'Clear Level 1' },
-  { id:'precision', name:'Precision', desc:'Finish a level with ≤3 misses' },
-  { id:'combo_master', name:'Combo Master', desc:'Hit 5 bricks in one rally' },
-  { id:'level_10', name:'Endurance', desc:'Reach Level 10' },
-];
+    <script>
+      const INV_ACH = [
+        {
+          id: 'first_blood',
+          name: 'First Blood',
+          desc: 'Destroy your first alien',
+        },
+        {
+          id: 'eagle_eye',
+          name: 'Eagle Eye',
+          desc: 'Reach 50% accuracy in a run',
+        },
+        {
+          id: 'iron_dome',
+          name: 'Iron Dome',
+          desc: 'Finish a wave with 80% barrier intact',
+        },
+        {
+          id: 'saucer_hunter',
+          name: 'Saucer Hunter',
+          desc: 'Destroy 3 motherships in one run',
+        },
+        { id: 'wave_10', name: 'On a Roll', desc: 'Reach Wave 10' },
+      ];
+      const BRK_ACH = [
+        { id: 'starter', name: 'Warm‑Up', desc: 'Clear Level 1' },
+        {
+          id: 'precision',
+          name: 'Precision',
+          desc: 'Finish a level with ≤3 misses',
+        },
+        {
+          id: 'combo_master',
+          name: 'Combo Master',
+          desc: 'Hit 5 bricks in one rally',
+        },
+        { id: 'level_10', name: 'Endurance', desc: 'Reach Level 10' },
+      ];
 
-function getAch(){ try{ const a=JSON.parse(localStorage.getItem('achievements_v1')||'{}'); return a&&typeof a==='object'?a:{}; }catch(e){ return {}; } }
+      function getAch() {
+        try {
+          const a = JSON.parse(localStorage.getItem('achievements_v1') || '{}');
+          return a && typeof a === 'object' ? a : {};
+        } catch (e) {
+          return {};
+        }
+      }
 
-function renderSection(elId, gameKey, defs){
-  const el = document.getElementById(elId);
-  const a = getAch()[gameKey] || {};
-  el.innerHTML = defs.map(def=>{
-    const unlocked = !!a[def.id];
-    const when = unlocked ? new Date(a[def.id].ts).toLocaleString() : '';
-    return `<div class="ach ${unlocked?'':'locked'}">
-      <h4>${def.name} ${unlocked?'<span class="pill">Unlocked</span>':'<span class="pill">Locked</span>'}</h4>
+      function renderSection(elId, gameKey, defs) {
+        const el = document.getElementById(elId);
+        const a = getAch()[gameKey] || {};
+        el.innerHTML = defs
+          .map((def) => {
+            const unlocked = !!a[def.id];
+            const when = unlocked
+              ? new Date(a[def.id].ts).toLocaleString()
+              : '';
+            return `<div class="ach ${unlocked ? '' : 'locked'}">
+      <h4>${def.name} ${unlocked ? '<span class="pill">Unlocked</span>' : '<span class="pill">Locked</span>'}</h4>
       <div style="color:#9ab">${def.desc}</div>
-      ${unlocked?`<div style="margin-top:6px;font-size:12px;color:#9ab">Unlocked: ${when}</div>`:''}
+      ${unlocked ? `<div style="margin-top:6px;font-size:12px;color:#9ab">Unlocked: ${when}</div>` : ''}
     </div>`;
-  }).join('');
-}
+          })
+          .join('');
+      }
 
-document.getElementById('year').textContent = new Date().getFullYear();
-renderSection('achInv','invaders',INV_ACH);
-renderSection('achBrk','breakout',BRK_ACH);
-</script>
-</body>
+      document.getElementById('year').textContent = new Date().getFullYear();
+      renderSection('achInv', 'invaders', INV_ACH);
+      renderSection('achBrk', 'breakout', BRK_ACH);
+    </script>
+  </body>
 </html>
