@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Asteroids – RetroArcade</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="canonical"
+      href="https://insertaquarter.com/games/asteroids/asteroids.html"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --ink: #e6edf3;
+        --muted: #9ab;
+        --panel: #121821;
+        --card: #1a2230;
+        --accent: #7ce7a2;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #0a0e14;
+        color: var(--ink);
+        font:
+          16px/1.5 Inter,
+          system-ui,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial;
+      }
+      header,
+      footer {
+        background: #121821;
+      }
+      header {
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      header .brand {
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-decoration: none;
+        color: var(--ink);
+      }
+      main {
+        max-width: 1100px;
+        margin: auto;
+        padding: 18px;
+      }
+      .ad {
+        height: 90px;
+        border-radius: 12px;
+        background: #0f1521;
+        border: 1px dashed #25344a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        margin: 12px 0;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid #1f2b3d;
+        border-radius: 16px;
+        padding: 14px;
+        margin-top: 12px;
+      }
+      .row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: #10192a;
+        border: 1px solid #1f2b3d;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      #gameWrap {
+        background: #0b111b;
+        border: 1px solid #1d2840;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+      }
+      #c {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        aspect-ratio: 960/640;
+        background: #02060d;
+        margin: 0 auto;
+      }
+      .hud {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        color: var(--muted);
+      }
+      .btn {
+        appearance: none;
+        border: 0;
+        border-radius: 12px;
+        padding: 8px 12px;
+        background: #1a2230;
+        color: var(--ink);
+        font-weight: 600;
+        cursor: pointer;
+      }
+      footer {
+        padding: 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+      #touchWrap {
+        display: none;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      #touchWrap button {
+        flex: 1;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #24344e;
+        background: #0f1521;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      @media (max-width: 860px) {
+        #touchWrap {
+          display: flex;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" id="brandLink" href="/">RetroArcade</a>
+      <nav style="display: flex; gap: 12px">
+        <a
+          href="/"
+          class="nav"
+          style="color: var(--accent); text-decoration: none"
+          >All Games</a
+        >
+        <a
+          href="/merch.html"
+          class="nav"
+          style="color: var(--accent); text-decoration: none"
+          >Merch</a
+        >
+      </nav>
+    </header>
+
+    <main>
+      <h1 style="margin: 6px 0 2px 0">Asteroids</h1>
+      <div class="row" style="margin-bottom: 8px">
+        <div class="pill">
+          Controls: ← → rotate • ↑ thrust • Space shoot • Enter start • P/Esc pause • R reset
+        </div>
+        <div class="pill">Mobile: Use on-screen controls</div>
+      </div>
+
+      <div class="ad">Ad placement (leaderboard)</div>
+
+      <section id="gameWrap" class="panel">
+        <canvas id="c" width="960" height="640"></canvas>
+        <button
+          id="quitBtn"
+          class="btn"
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 20;
+            display: none;
+          "
+        >
+          Quit
+        </button>
+
+        <div id="touchWrap">
+          <button id="leftBtn">◀ ROTATE</button>
+          <button id="rightBtn">ROTATE ▶</button>
+          <button id="thrustBtn">THRUST</button>
+        </div>
+
+        <div class="hud">
+          <div>
+            Lives: <strong id="lives">3</strong> · Level:
+            <strong id="level">1</strong> · Score:
+            <strong id="score">0</strong> · Best: <strong id="best">0</strong>
+          </div>
+          <div>
+            <button class="btn" id="startBtn">Start</button>
+            <button class="btn" id="fsBtn">⛶ Fullscreen</button>
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="muteBtn">🔊 Sound On</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 style="margin-top: 0">Leaderboard</h2>
+        <div id="leaderboard" style="min-height: 140px"><em>Loading…</em></div>
+      </section>
+
+      <section class="panel">
+        <h2 style="margin-top: 0">Local High Scores</h2>
+        <ol
+          id="localHighscores"
+          style="margin: 0; padding-left: 1.25rem; line-height: 1.8"
+        ></ol>
+      </section>
+
+      <section class="panel">
+        <h2 style="margin-top: 0">Your Stats</h2>
+        <div id="runStats" style="line-height: 1.8"></div>
+        <h3 style="margin: 12px 0 6px 0">All-time</h3>
+        <div id="lifetimeStats" style="line-height: 1.8"></div>
+      </section>
+
+      <div class="ad">Ad placement (in-content)</div>
+    </main>
+
+    <footer>© <span id="year"></span> RetroArcade</footer>
+
+    <!-- Shared helper (handles POST /api/scores) -->
+    <script src="/js/score-submit.js?v=3"></script>
+    <script src="asteroids.js"></script>
+  </body>
+</html>
