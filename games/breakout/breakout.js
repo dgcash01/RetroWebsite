@@ -72,13 +72,13 @@
       leaderboardBox.innerHTML =
         Array.isArray(data) && data.length
           ? '<ol style="margin:0 0 0 1.25rem;line-height:1.8">' +
-            data
-              .map(
-                (s, i) =>
-                  `<li><strong>#${i + 1}</strong> — ${escapeHtml(s.player)} — <strong>${Number(s.score).toLocaleString()}</strong></li>`,
-              )
-              .join('') +
-            '</ol>'
+          data
+            .map(
+              (s, i) =>
+                `<li><strong>#${i + 1}</strong> — ${escapeHtml(s.player)} — <strong>${Number(s.score).toLocaleString()}</strong></li>`,
+            )
+            .join('') +
+          '</ol>'
           : '<p>No scores yet — be the first!</p>';
     } catch {
       leaderboardBox.innerHTML = '<p>Could not load scores.</p>';
@@ -213,11 +213,11 @@
       const a = getHS();
       localHSList.innerHTML = a.length
         ? a
-            .map(
-              (o, i) =>
-                `<li>#${i + 1} — ${escapeHtml(o.n)} — ${o.s.toLocaleString()}</li>`,
-            )
-            .join('')
+          .map(
+            (o, i) =>
+              `<li>#${i + 1} — ${escapeHtml(o.n)} — ${o.s.toLocaleString()}</li>`,
+          )
+          .join('')
         : '<li>No scores yet</li>';
     } catch {
       localHSList.innerHTML = '<li>No scores yet</li>';
@@ -567,10 +567,15 @@
   function endRun(/* won */) {
     paused = true;
     running = true; // keep draw loop for overlay
-    updateBest(score);
 
-    // fire-and-forget cloud submit (guarded)
-    submitBreakoutScore(score);
+    // when lives reach 0 or you trigger game over:
+    if (lives <= 0 && !gameOver) {
+      gameOver = true;
+      const finalScore = score;
+      if (window.onBreakoutGameOver) window.onBreakoutGameOver(finalScore);
+    }
+
+    updateBest(score);
 
     if (isTop10(score)) {
       enteringInitials = true;
@@ -723,7 +728,7 @@
       if (gameWrap.requestFullscreen) await gameWrap.requestFullscreen();
       else if (gameWrap.webkitRequestFullscreen)
         await gameWrap.webkitRequestFullscreen();
-    } catch {}
+    } catch { }
     updateFsBtn();
   }
   async function exitFs() {
@@ -731,7 +736,7 @@
       if (document.exitFullscreen) await document.exitFullscreen();
       else if (document.webkitExitFullscreen)
         await document.webkitExitFullscreen();
-    } catch {}
+    } catch { }
     updateFsBtn();
   }
   function toggleFs() {

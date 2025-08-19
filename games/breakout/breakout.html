@@ -205,14 +205,37 @@
 
         <section class="panel">
             <h2 style="margin-top:0">Leaderboard</h2>
-            <div id="leaderboard" style="margin:0;padding-left:20px;min-height:120px;">
-                Loading…
-            </div>
+            <div id="leaderboard" style="margin:0;padding-left:20px;min-height:120px;">Loading…</div>
         </section>
 
+        <script type="module">
+            import { submitScore, loadTopScores } from "/js/score-submit.js";
+            const GAME_ID = "breakout";
 
-        <script src="/js/score-submit.js?v=3"></script>
+            function renderLeaderboard(rows) {
+                const el = document.getElementById("leaderboard");
+                el.innerHTML = rows.length
+                    ? "<ol>" + rows.map(r => `<li>${r.player} — ${r.score}</li>`).join("") + "</ol>"
+                    : "<p>No scores yet.</p>";
+            }
+
+            async function refreshLeaderboard() {
+                const rows = await loadTopScores(GAME_ID, 10);
+                renderLeaderboard(rows);
+            }
+
+            // Expose for the game script to call
+            window.onBreakoutGameOver = async (finalScore) => {
+                const name = localStorage.getItem("playerName") || prompt("Your name?") || "Player";
+                await submitScore(GAME_ID, name, finalScore);
+                await refreshLeaderboard();
+            };
+
+            refreshLeaderboard();
+        </script>
+
         <script src="/games/breakout/breakout.js?v=3"></script>
+
 
 </body>
 
