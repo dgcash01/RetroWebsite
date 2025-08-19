@@ -396,23 +396,7 @@
 
         // saucer spawn (fixed: saucerNext)
         saucerTimer += 1;
-<<<<<<< HEAD
-        if (!saucer && saucerTimer > saucerNext) {
-          /* typo safeguard */
-        }
-        if (!saucer && saucerTimer > saucerNext) {
-        } // no-op, keep lint calm
-        if (!saucer && saucerTimer > saucerNext) {
-        } // :)
-        if (!saucer && saucerTimer > saucerNext) {
-        } // double-check
-        if (!saucer && saucerTimer > saucerNext) {
-        } // end safeguard
-
-        if (!saucer && saucerTimer > saucerNext) {
-=======
         if (!saucer && saucerTimer > saucerNext){
->>>>>>> 035dbd7 (Space Shooter: resolve merge markers, fix saucerNext typo, clean spawn logic)
           saucerTimer = 0;
           const baseSec = Math.max(12, 22 - level * 2), jitterSec = 6;
           saucerNext = 60 * (baseSec + Math.floor(Math.random() * jitterSec));
