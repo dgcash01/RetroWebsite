@@ -1,144 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Leaderboard – Insert a Quarter</title>
-  <link rel="canonical" href="https://insertaquarter.com/leaderboard.html">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link href="/styles.css" rel="stylesheet">
-</head>
-<body>
-  <header>
-    <a class="brand" href="/">RetroArcade</a>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/merch.html">Merch</a>
-      <a href="/blog/">Blog</a>
-      <a href="/achievements.html">Achievements</a>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Leaderboard – Insert a Quarter</title>
+    <link rel="canonical" href="https://insertaquarter.com/leaderboard.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">RetroArcade</a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/merch.html">Merch</a>
+        <a href="/blog/">Blog</a>
+        <a href="/achievements.html">Achievements</a>
+      </nav>
+    </header>
 
-  <main class="container">
-    <h1>Leaderboard</h1>
+    <main class="container">
+      <h1>Leaderboard</h1>
 
-    <div class="panel" style="margin-bottom:16px;">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="pill" data-game="breakout">Breakout</button>
-        <button class="pill" data-game="space-shooter">Space Shooter</button>
-        <button class="pill" data-game="highway-hopper">Highway Hopper</button>
+      <div class="panel" style="margin-bottom: 16px">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button class="pill" data-game="breakout">Breakout</button>
+          <button class="pill" data-game="space-shooter">Space Shooter</button>
+          <button class="pill" data-game="highway-hopper">
+            Highway Hopper
+          </button>
+        </div>
       </div>
-    </div>
 
-    <div class="panel" id="ad-slot-top" aria-label="Ad placement (leaderboard)"></div>
+      <div
+        class="panel"
+        id="ad-slot-top"
+        aria-label="Ad placement (leaderboard)"
+      ></div>
 
-    <section class="panel">
-      <h2 style="margin-top:0;">Global Top Scores</h2>
-      <ol id="global-list" style="margin:0;padding-left:20px;min-height:160px;">
-        <li>Loading…</li>
-      </ol>
-    </section>
+      <section class="panel">
+        <h2 style="margin-top: 0">Global Top Scores</h2>
+        <ol
+          id="global-list"
+          style="margin: 0; padding-left: 20px; min-height: 160px"
+        >
+          <li>Loading…</li>
+        </ol>
+      </section>
 
-    <section class="panel">
-      <h2 style="margin-top:0;">Your Local High Scores</h2>
-      <ol id="local-list" style="margin:0;padding-left:20px;min-height:120px;">
-        <li>No local scores yet.</li>
-      </ol>
-    </section>
+      <section class="panel">
+        <h2 style="margin-top: 0">Your Local High Scores</h2>
+        <ol
+          id="local-list"
+          style="margin: 0; padding-left: 20px; min-height: 120px"
+        >
+          <li>No local scores yet.</li>
+        </ol>
+      </section>
 
-    <div class="panel" id="ad-slot-bottom" aria-label="In-content Ad"></div>
-  </main>
+      <div class="panel" id="ad-slot-bottom" aria-label="In-content Ad"></div>
+    </main>
 
-  <footer>
-    <small>© <span id="year"></span> Insert a Quarter</small>
-  </footer>
+    <footer>
+      <small>© <span id="year"></span> Insert a Quarter</small>
+    </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
 
-    (function () {
-      const buttons = Array.from(document.querySelectorAll('button[data-game]'));
-      const globalList = document.getElementById('global-list');
-      const localList  = document.getElementById('local-list');
+      (function () {
+        const buttons = Array.from(
+          document.querySelectorAll('button[data-game]'),
+        );
+        const globalList = document.getElementById('global-list');
+        const localList = document.getElementById('local-list');
 
-      // map aliases from links like ?game=invaders → space-shooter
-      const alias = { invaders: 'space-shooter', 'cosmic-invaders': 'space-shooter', space_invaders: 'space-shooter' };
-      const params = new URLSearchParams(location.search);
-      const initialParam = (params.get('game') || 'breakout').toLowerCase();
-      let current = alias[initialParam] || initialParam;
-
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, m => (
-          { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]
-        ));
-      }
-
-      function setActive(game) {
-        buttons.forEach(b => b.classList.toggle('active', b.dataset.game === game));
-      }
-
-      function renderLocal(game) {
-        const keyMap = {
-          'breakout': ['breakout_best'],
-          'space-shooter': ['space_shooter_best'],
-          'highway-hopper': ['highway_hopper_best']
+        // map aliases from links like ?game=invaders → space-shooter
+        const alias = {
+          invaders: 'space-shooter',
+          'cosmic-invaders': 'space-shooter',
+          space_invaders: 'space-shooter',
         };
-        const items = (keyMap[game] || [])
-          .map(k => {
-            const v = localStorage.getItem(k);
-            return v ? { name: k.replace(/_/g, ' '), score: Number(v) } : null;
-          })
-          .filter(Boolean)
-          .sort((a, b) => b.score - a.score);
+        const params = new URLSearchParams(location.search);
+        const initialParam = (params.get('game') || 'breakout').toLowerCase();
+        let current = alias[initialParam] || initialParam;
 
-        localList.innerHTML = items.length
-          ? items.map(i => `<li><strong>${i.score.toLocaleString()}</strong> — ${i.name}</li>`).join('')
-          : `<li>No local scores yet for ${game.replace('-', ' ')}.</li>`;
-      }
-
-      function setLoading() { globalList.innerHTML = '<li>Loading…</li>'; }
-
-      async function loadGlobal(game) {
-        setLoading();
-        try {
-          const res = await fetch(`/api/scores?game=${encodeURIComponent(game)}&limit=25`, { cache: 'no-store' });
-          const data = await res.json();
-          globalList.innerHTML = (Array.isArray(data) && data.length)
-            ? data.map((s, i) =>
-                `<li><strong>#${i + 1}</strong> — ${escapeHtml(s.player)} — <strong>${Number(s.score).toLocaleString()}</strong></li>`
-              ).join('')
-            : '<li>No scores yet — be the first!</li>';
-        } catch {
-          globalList.innerHTML = '<li>Could not load scores. Try again later.</li>';
+        function escapeHtml(s) {
+          return String(s).replace(
+            /[&<>"']/g,
+            (m) =>
+              ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;',
+              })[m],
+          );
         }
-      }
 
-      // Wire up tabs
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          current = btn.dataset.game;
-          // update URL without reload
-          const p = new URLSearchParams(location.search);
-          p.set('game', current);
-          history.replaceState(null, '', `${location.pathname}?${p.toString()}`);
+        function setActive(game) {
+          buttons.forEach((b) =>
+            b.classList.toggle('active', b.dataset.game === game),
+          );
+        }
+
+        function renderLocal(game) {
+          const keyMap = {
+            breakout: ['breakout_best'],
+            'space-shooter': ['space_shooter_best'],
+            'highway-hopper': ['highway_hopper_best'],
+          };
+          const items = (keyMap[game] || [])
+            .map((k) => {
+              const v = localStorage.getItem(k);
+              return v
+                ? { name: k.replace(/_/g, ' '), score: Number(v) }
+                : null;
+            })
+            .filter(Boolean)
+            .sort((a, b) => b.score - a.score);
+
+          localList.innerHTML = items.length
+            ? items
+                .map(
+                  (i) =>
+                    `<li><strong>${i.score.toLocaleString()}</strong> — ${i.name}</li>`,
+                )
+                .join('')
+            : `<li>No local scores yet for ${game.replace('-', ' ')}.</li>`;
+        }
+
+        function setLoading() {
+          globalList.innerHTML = '<li>Loading…</li>';
+        }
+
+        async function loadGlobal(game) {
+          setLoading();
+          try {
+            const res = await fetch(
+              `/api/scores?game=${encodeURIComponent(game)}&limit=25`,
+              { cache: 'no-store' },
+            );
+            const data = await res.json();
+            globalList.innerHTML =
+              Array.isArray(data) && data.length
+                ? data
+                    .map(
+                      (s, i) =>
+                        `<li><strong>#${i + 1}</strong> — ${escapeHtml(s.player)} — <strong>${Number(s.score).toLocaleString()}</strong></li>`,
+                    )
+                    .join('')
+                : '<li>No scores yet — be the first!</li>';
+          } catch {
+            globalList.innerHTML =
+              '<li>Could not load scores. Try again later.</li>';
+          }
+        }
+
+        // Wire up tabs
+        buttons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            current = btn.dataset.game;
+            // update URL without reload
+            const p = new URLSearchParams(location.search);
+            p.set('game', current);
+            history.replaceState(
+              null,
+              '',
+              `${location.pathname}?${p.toString()}`,
+            );
+            setActive(current);
+            renderLocal(current);
+            loadGlobal(current);
+          });
+        });
+
+        // Initial load: activate from param or fall back to first
+        const startBtn =
+          buttons.find((b) => b.dataset.game === current) || buttons[0];
+        if (startBtn) {
+          startBtn.click();
+        } else {
           setActive(current);
           renderLocal(current);
           loadGlobal(current);
-        });
-      });
-
-      // Initial load: activate from param or fall back to first
-      const startBtn = buttons.find(b => b.dataset.game === current) || buttons[0];
-      if (startBtn) {
-        startBtn.click();
-      } else {
-        setActive(current);
-        renderLocal(current);
-        loadGlobal(current);
-      }
-    })();
-  </script>
-</body>
+        }
+      })();
+    </script>
+  </body>
 </html>

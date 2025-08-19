@@ -7,3 +7,5 @@ build/
 .idea/
 .wrangler/
 *.log
+test-artifacts/
+lighthouse/
