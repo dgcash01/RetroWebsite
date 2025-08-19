@@ -1,4 +1,6 @@
-name = "iaq-api"
+name = "insertaquarter"
+pages_build_output_dir = "."
+
 main = "api/worker.js"        # we'll add this worker next step
 compatibility_date = "2025-01-01"
 
