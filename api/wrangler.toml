@@ -1,0 +1,25 @@
+name = "insertquarter-api"
+main = "./worker.js"
+compatibility_date = "2025-01-01"
+workers_dev = false
+
+[vars]
+CORS_ORIGIN = "https://insertaquarter.com,https://www.insertaquarter.com,https://*.workers.dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "iaq"
+database_id = "926ed94b-f3d2-4bc1-a5a8-88ecb1e6c0d1"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "retroarcade-assets"
+
+[[routes]]
+pattern = "https://insertaquarter.com/api/*"
+zone_name = "insertaquarter.com"
+
+[[routes]]
+pattern = "https://www.insertaquarter.com/api/*"
+zone_name = "insertaquarter.com"
+
